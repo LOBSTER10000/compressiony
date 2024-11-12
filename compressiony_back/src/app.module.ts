@@ -5,23 +5,30 @@ import { FileuploadModule } from './fileupload/fileupload.module';
 import { FileconvertModule } from './fileconvert/fileconvert.module';
 import { FiledownloadModule } from './filedownload/filedownload.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Files } from './entities/files.entity';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { join } from 'path';
+import { OriginalFile } from './entities/originalFile.entity';
+import { ConvertFile } from './entities/convertFile.entity';
+import { DownloadFile } from './entities/downloadFile.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath : [`${__dirname}/config/config.env`],
+      envFilePath : join(__dirname, '..', 'src/config/config.env'),
       isGlobal : true,
     }),
-    TypeOrmModule.forRoot({
-      type : 'mysql',
-      host : 'localhost',
-      port : 3306,
-      username : process.env.USERNAME,
-      password : process.env.PASSWORD,
-      database : process.env.DATABASE,
-      entities : [Files],
+    TypeOrmModule.forRootAsync({
+      imports : [ConfigModule],
+      inject : [ConfigService],
+      useFactory : ()=> ({
+        type : 'mysql',
+        port : 3306,
+        username : 
+        password : 
+        database : 
+        entities : [OriginalFile, ConvertFile, DownloadFile],
+        synchronize : false,
+      }),
     }),
     FileuploadModule, 
     FileconvertModule, 
@@ -30,3 +37,5 @@ import { ConfigModule } from '@nestjs/config';
   providers: [AppService],
 })
 export class AppModule {}
+
+console.log(process.env.FILE_USERNAME);
