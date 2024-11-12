@@ -31,29 +31,74 @@ const FileConverter = () => {
   const [convertTo, setConvertTo] = useState<string>('7z');
   const [progress, setProgress] = useState<number>(0);
   const [isConverting, setIsConverting] = useState<boolean>(false);
-
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  
+  // upload File Change
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setFiles(Array.from(event.target.files));
+      const validFiles = Array.from(event.target.files).filter((file)=>{
+        if(file.size > 50 * 1024 * 1024){
+          alert(`${file.name}은(는) 50MB를 초과합니다`);
+          return false;
+        }
+        return true;
+      });
+      
+      setFiles(validFiles);
     }
   };
+  
+  
+  // convert button logic
+  const handleConvert = async ()=>{
+    if(files.length === 0) return;
+    setIsUploading(true);
+    let formData = new FormData();
 
-  const handleConvert = () => {
-    if (files.length === 0) return;
-    setIsConverting(true);
-    setProgress(0);
+    files.map((item)=>{
+      formData.append('file',item);
+    })
+    
+    try{
+      const response = await fetch('http://localhost:3400/fileconvert/uploadFile', {
+        method : "post",
+        mode : "cors",
+        cache : "no-cache",
+        credentials : "same-origin",
+        body : formData,
+      });
 
-    // Simulate conversion process
-    let progressValue = 0;
-    const interval = setInterval(() => {
-      progressValue += 10;
-      setProgress(progressValue);
-      if (progressValue >= 100) {
-        clearInterval(interval);
-        setIsConverting(false);
+      if(!response.ok){
+        throw new Error(`서버 연결 실패 ${response.statusText}`)
       }
-    }, 500);
-  };
+
+      const result = await response.json();
+      console.log('결과 성공', result);
+    } 
+    catch(err){
+      console.error('결과 실패', err);
+    } 
+    finally {
+      setIsUploading(false);
+    }
+  } 
+  // const handleConvert = () => {
+  //   if (files.length === 0) return;
+  //   setIsConverting(true);
+  //   setProgress(0);
+
+  //   // Simulate conversion process
+  //   let progressValue = 0;
+  //   const interval = setInterval(() => {
+  //     progressValue += 10;
+  //     setProgress(progressValue);
+  //     if (progressValue >= 100) {
+  //       clearInterval(interval);
+  //       setIsConverting(false);
+  //     }
+  //   }, 500);
+  // };
+
 
   return (
     <div className="container">
@@ -68,7 +113,7 @@ const FileConverter = () => {
               className="hidden"
               id="file-upload"
               multiple
-              accept=".zip,.tar,.7z,.tar.gz,.gz,.bz2"
+              accept=".zip,.tar,.7z,.tar.gz,.gz,.bz2,.rar"
             />
             <label htmlFor="file-upload" className="file-upload-label">
               <Upload style={{ marginRight: '0.5rem', height: '1rem', width: '1rem' }} />
