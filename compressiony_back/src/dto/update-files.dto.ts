@@ -8,4 +8,7 @@ export class UpdateFilesDto extends PartialType(CreateFilesDto) {
 
     @IsString()
     convertedPath? : string;
+
+    @IsString()
+    conversaionType? : string;
 }

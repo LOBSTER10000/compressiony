@@ -1,6 +1,6 @@
 import {diskStorage} from 'multer';
 import { join } from 'path';
-
+import * as iconv from 'iconv-lite';
 
 export const fileUploadMulterOptions = {
     storage : diskStorage({
@@ -10,10 +10,11 @@ export const fileUploadMulterOptions = {
             callback(null, uploadPath);
         },
         filename : (req, file, callback)=> {
-            let name = file.originalname;
-            callback(null, name);
-        }
-    })
+            let utf8FileName = iconv.decode(Buffer.from(file.originalname, 'latin1'), 'utf8')  ;
+            callback(null, utf8FileName);
+        },
+    }),
+    limits : {fileSize : 50 * 1024 * 1024},
 }
 
 export const fileConvertMulterOptions = {

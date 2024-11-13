@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './FileConverter.scss';
 import { ArrowRight, Upload, Download } from 'lucide-react';
+import * as uuid from 'uuid';
 
 // Header Component
 const Header = () => (
@@ -32,10 +33,24 @@ const FileConverter = () => {
   const [progress, setProgress] = useState<number>(0);
   const [isConverting, setIsConverting] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
-  
+  const [isUploadingSuccess, setIsUploadingSuccess] = useState<boolean>(false);
+
+  // set userUUID 
+  useEffect(()=>{
+    if(localStorage.getItem('userUUID')) return;
+    localStorage.setItem('userUUID', uuid.v6());
+  }, []);
+
   // upload File Change
+
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
+      setIsUploading(false);
+      setIsUploadingSuccess(false);
+      setIsConverting(false);
+      setProgress(0);
+
       const validFiles = Array.from(event.target.files).filter((file)=>{
         if(file.size > 50 * 1024 * 1024){
           alert(`${file.name}은(는) 50MB를 초과합니다`);
@@ -54,8 +69,10 @@ const FileConverter = () => {
     if(files.length === 0) return;
     setIsUploading(true);
     let formData = new FormData();
+    const userUUID = localStorage.getItem('userUUID') || '';
 
     files.map((item)=>{
+      formData.append('userUUID', userUUID);
       formData.append('file',item);
     })
     
@@ -72,8 +89,9 @@ const FileConverter = () => {
         throw new Error(`서버 연결 실패 ${response.statusText}`)
       }
 
-      const result = await response.json();
-      console.log('결과 성공', result);
+      setIsUploadingSuccess(true);
+      
+      
     } 
     catch(err){
       console.error('결과 실패', err);
@@ -82,23 +100,6 @@ const FileConverter = () => {
       setIsUploading(false);
     }
   } 
-  // const handleConvert = () => {
-  //   if (files.length === 0) return;
-  //   setIsConverting(true);
-  //   setProgress(0);
-
-  //   // Simulate conversion process
-  //   let progressValue = 0;
-  //   const interval = setInterval(() => {
-  //     progressValue += 10;
-  //     setProgress(progressValue);
-  //     if (progressValue >= 100) {
-  //       clearInterval(interval);
-  //       setIsConverting(false);
-  //     }
-  //   }, 500);
-  // };
-
 
   return (
     <div className="container">
@@ -149,14 +150,24 @@ const FileConverter = () => {
           </select>
 
           {/* Convert button */}
-          <button
-            onClick={handleConvert}
-            disabled={files.length === 0 || isConverting}
-            className="button"
-          >
-            <ArrowRight style={{ marginRight: '0.5rem', height: '1rem', width: '1rem' }} />
-            convert to {convertTo}  
-          </button>
+          {!isUploadingSuccess && (
+            <button
+              onClick={handleConvert}
+              disabled={files.length === 0 || isConverting}
+              className="button"
+            >
+              <ArrowRight style={{ marginRight: '0.5rem', height: '1rem', width: '1rem' }} />
+              upload files  
+            </button>
+          )}
+
+          {isUploadingSuccess && (
+            <button
+            disabled={files.length === 0 || isConverting || !isUploadingSuccess} className='button'>
+              <ArrowRight style={{ marginRight: '0.5rem', height: '1rem', width: '1rem' }} />
+              uploading complete! convert to {convertTo} 
+            </button>
+          )}
 
           {isConverting && (
             <div>

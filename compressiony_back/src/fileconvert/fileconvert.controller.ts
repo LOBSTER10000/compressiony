@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseInterceptors, UploadedFiles, ValidationPipe } from '@nestjs/common';
 import { FileconvertService } from './fileconvert.service';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { fileUploadMulterOptions } from './fileconvert.multer';
+import * as fs from 'fs';
+import { CreateFilesDto } from 'src/dto/create-files.dto';
 
 @Controller('fileconvert')
 export class FileconvertController {
@@ -10,8 +12,13 @@ export class FileconvertController {
   
   @Post('/uploadFile')
   @UseInterceptors(FilesInterceptor('file', null, fileUploadMulterOptions))
-  async uploadFile(@Req() request : Request, @Res() response : Response, @UploadedFiles() files : File[]){
-      let result = await this.fileconvertService.uploadFile(request, response, files);
-      return result;
+  async uploadFile(@Req() request, @Res() response, @UploadedFiles() files : Express.Multer.File[], @Body(new ValidationPipe()) body : CreateFilesDto){
+      try{
+        const user = JSON.parse(JSON.stringify(body));
+        let result = await this.fileconvertService.uploadFile(request, response, files, user);
+        return response.json(result);
+      } catch(err){
+        console.error(err);
+      }
   }
 }
