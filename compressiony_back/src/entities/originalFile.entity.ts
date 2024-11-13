@@ -26,6 +26,9 @@ import {
   
     @Column()
     type : string;
+
+    @Column()
+    uploadingSession : string;
   
     @CreateDateColumn()
     createdAt : Date;

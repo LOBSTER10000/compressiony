@@ -32,4 +32,9 @@ export class ConvertFile {
   @Column({nullable : true})
   completedAt : Date;
 
+  @Column()
+  conversionName : string;
+
+  @Column()
+  conversionPath : string;
 }

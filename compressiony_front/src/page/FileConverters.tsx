@@ -28,12 +28,14 @@ const ProgressBar = ({ progress }: { progress: number }) => (
 
 // Main Component
 const FileConverter = () => {
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles]= useState<File[]>([]);
   const [convertTo, setConvertTo] = useState<string>('7z');
   const [progress, setProgress] = useState<number>(0);
   const [isConverting, setIsConverting] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isUploadingSuccess, setIsUploadingSuccess] = useState<boolean>(false);
+  
+  let formData = new FormData();
 
   // set userUUID 
   useEffect(()=>{
@@ -44,13 +46,14 @@ const FileConverter = () => {
   // upload File Change
 
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const userUUID = localStorage.getItem('userUUID');
     if (event.target.files) {
       setIsUploading(false);
       setIsUploadingSuccess(false);
       setIsConverting(false);
       setProgress(0);
-
+     
       const validFiles = Array.from(event.target.files).filter((file)=>{
         if(file.size > 50 * 1024 * 1024){
           alert(`${file.name}은(는) 50MB를 초과합니다`);
@@ -64,18 +67,18 @@ const FileConverter = () => {
   };
   
   
-  // convert button logic
-  const handleConvert = async ()=>{
+  // upload button logic
+  const handleUpload = async ()=>{
     if(files.length === 0) return;
     setIsUploading(true);
-    let formData = new FormData();
+    
     const userUUID = localStorage.getItem('userUUID') || '';
 
     files.map((item)=>{
       formData.append('userUUID', userUUID);
       formData.append('file',item);
     })
-    
+
     try{
       const response = await fetch('http://localhost:3400/fileconvert/uploadFile', {
         method : "post",
@@ -100,6 +103,20 @@ const FileConverter = () => {
       setIsUploading(false);
     }
   } 
+
+  const handleConvert = async ()=>{
+    const userUUID = localStorage.getItem('userUUID') || '';
+    try{
+      const result = await fetch('http://localhost:3400/fileconvert/convertFile', {
+        method : 'POST',
+        credentials : 'same-origin',
+        mode : 'cors',
+        cache : 'no-cache'
+      });
+    } catch(err){
+      console.error(err);
+    }
+  }
 
   return (
     <div className="container">
@@ -152,7 +169,7 @@ const FileConverter = () => {
           {/* Convert button */}
           {!isUploadingSuccess && (
             <button
-              onClick={handleConvert}
+              onClick={handleUpload}
               disabled={files.length === 0 || isConverting}
               className="button"
             >
@@ -162,7 +179,7 @@ const FileConverter = () => {
           )}
 
           {isUploadingSuccess && (
-            <button
+            <button onClick={handleConvert}
             disabled={files.length === 0 || isConverting || !isUploadingSuccess} className='button'>
               <ArrowRight style={{ marginRight: '0.5rem', height: '1rem', width: '1rem' }} />
               uploading complete! convert to {convertTo} 

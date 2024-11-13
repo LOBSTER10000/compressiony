@@ -23,10 +23,12 @@ import { DownloadFile } from './entities/downloadFile.entity';
         type : 'mysql',
         port : 3306,
         username : 
-        password :
+        password : 
         database : 
         entities : [OriginalFile, ConvertFile, DownloadFile],
         synchronize : false,
+        logging : false,
+        dropSchema : false,
       }),
     }),
     FileconvertModule, 

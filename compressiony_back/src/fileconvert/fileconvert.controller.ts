@@ -7,18 +7,24 @@ import { CreateFilesDto } from 'src/dto/create-files.dto';
 
 @Controller('fileconvert')
 export class FileconvertController {
-  constructor(private readonly fileconvertService: FileconvertService) {}
+  constructor(
+    private readonly fileconvertService: FileconvertService
+  ) {}
 
   
   @Post('/uploadFile')
   @UseInterceptors(FilesInterceptor('file', null, fileUploadMulterOptions))
   async uploadFile(@Req() request, @Res() response, @UploadedFiles() files : Express.Multer.File[], @Body(new ValidationPipe()) body : CreateFilesDto){
       try{
-        const user = JSON.parse(JSON.stringify(body));
-        let result = await this.fileconvertService.uploadFile(request, response, files, user);
+        const user : CreateFilesDto = JSON.parse(JSON.stringify(body));
+        let result : Express.Multer.File[] = await this.fileconvertService.uploadFile(request, response, files, user);
         return response.json(result);
       } catch(err){
         console.error(err);
       }
+  }
+
+  @Post('/convertFile')
+  async convertFile(@Req() request, @Res() response, @Body() body){
   }
 }
