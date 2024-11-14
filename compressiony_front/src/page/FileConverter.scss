@@ -18,10 +18,16 @@
   }
   
   .main {
+    display: flex;
+    align-items: center;
     flex-grow: 1;
     padding: 16px;
     margin: 0 auto;
     max-width: 600px;
+  }
+
+  .file-upload {
+    margin-bottom: 1rem;
   }
   
   .file-upload-label {
@@ -101,6 +107,7 @@
   }
 
   .hidden {
+    width: 5rem;
     visibility: hidden;
   }
   

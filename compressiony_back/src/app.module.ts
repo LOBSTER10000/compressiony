@@ -1,14 +1,41 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
-import { FileuploadModule } from './fileupload/fileupload.module';
 import { FileconvertModule } from './fileconvert/fileconvert.module';
 import { FiledownloadModule } from './filedownload/filedownload.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { join } from 'path';
+import { OriginalFile } from './entities/originalFile.entity';
+import { ConvertFile } from './entities/convertFile.entity';
+import { DownloadFile } from './entities/downloadFile.entity';
 
 @Module({
-  imports: [UserModule, FileuploadModule, FileconvertModule, FiledownloadModule],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath : join(__dirname, '..', 'src/config/config.env'),
+      isGlobal : true,
+    }),
+    TypeOrmModule.forRootAsync({
+      imports : [ConfigModule],
+      inject : [ConfigService],
+      useFactory : ()=> ({
+        type : 'mysql',
+        port : 3306,
+        username : 
+        password : 
+        database : 
+        entities : [OriginalFile, ConvertFile, DownloadFile],
+        synchronize : true,
+        logging : false,
+        dropSchema : true,
+      }),
+    }),
+    FileconvertModule, 
+    FiledownloadModule],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
+
+console.log(process.env.FILE_USERNAME);
