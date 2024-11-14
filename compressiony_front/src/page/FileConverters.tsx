@@ -111,7 +111,6 @@ const FileConverter = () => {
         method : 'POST',
         credentials : 'same-origin',
         mode : 'cors',
-<<<<<<< HEAD
         cache : 'no-cache',
         headers : {
           'Content-Type' : 'application/json'
@@ -126,11 +125,6 @@ const FileConverter = () => {
       }
 
       console.log('결과', result);
-
-=======
-        cache : 'no-cache'
-      });
->>>>>>> 323b0f0b5748f96e8cb104951a116e243c2db3c2
     } catch(err){
       console.error(err);
     }
@@ -149,11 +143,7 @@ const FileConverter = () => {
               className="hidden"
               id="file-upload"
               multiple
-<<<<<<< HEAD
-              accept=".zip, .tar, .tgz, .gzip, .7z"
-=======
               accept=".zip,.tar,.7z,.tar.gz,.gz,.bz2,.rar"
->>>>>>> 323b0f0b5748f96e8cb104951a116e243c2db3c2
             />
             <label htmlFor="file-upload" className="file-upload-label">
               <Upload style={{ marginRight: '0.5rem', height: '1rem', width: '1rem' }} />
