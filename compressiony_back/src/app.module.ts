@@ -13,18 +13,18 @@ import { DownloadFile } from './entities/downloadFile.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath : join(__dirname, '..', 'src/config/config.env'),
+      envFilePath : join(process.cwd(), 'src/config/config.env'),
       isGlobal : true,
     }),
     TypeOrmModule.forRootAsync({
       imports : [ConfigModule],
       inject : [ConfigService],
-      useFactory : ()=> ({
+      useFactory : (configService : ConfigService)=> ({
         type : 'mysql',
         port : 3306,
-        username : 
-        password : 
-        database : 
+        username : process.env.FILE_USERSNAME,
+        password : process.env.FILE_PASSWORDS,
+        database : process.env.FILE_DATABASES,
         entities : [OriginalFile, ConvertFile, DownloadFile],
         synchronize : true,
         logging : false,
