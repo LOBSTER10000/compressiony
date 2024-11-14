@@ -15,4 +15,23 @@ export const fileUploadMulterOptions = {
         },
     }),
     limits : {fileSize : 50 * 1024 * 1024},
+<<<<<<< HEAD
+=======
+}
+
+export const fileConvertMulterOptions = {
+        fileFilter : (req, file, callback)=>{
+
+        },
+
+        storage : diskStorage({
+            destination : (req, fil, callback)=>{
+
+            },
+
+            filename : (req, file, callback)=>{
+
+            }
+        })
+>>>>>>> 323b0f0b5748f96e8cb104951a116e243c2db3c2
 }

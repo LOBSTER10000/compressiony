@@ -26,9 +26,15 @@ import { DownloadFile } from './entities/downloadFile.entity';
         password : 
         database : 
         entities : [OriginalFile, ConvertFile, DownloadFile],
+<<<<<<< HEAD
         synchronize : true,
         logging : false,
         dropSchema : true,
+=======
+        synchronize : false,
+        logging : false,
+        dropSchema : false,
+>>>>>>> 323b0f0b5748f96e8cb104951a116e243c2db3c2
       }),
     }),
     FileconvertModule, 

@@ -5,7 +5,10 @@
 /src/config
 /upload
 /convert
+<<<<<<< HEAD
 /uncompress
+=======
+>>>>>>> 323b0f0b5748f96e8cb104951a116e243c2db3c2
 
 # Logs
 logs
