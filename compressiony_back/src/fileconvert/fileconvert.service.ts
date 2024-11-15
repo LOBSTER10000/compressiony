@@ -47,6 +47,7 @@ export class FileconvertService {
      }
   }
 
+  // uncompress file
   async uncompressFile(type: string, inputPath: string, outputDirectory: string) {
     const uncompressMethods = {
       zip: () => uncompressZip(inputPath, outputDirectory),
@@ -68,12 +69,64 @@ export class FileconvertService {
     }
   }
 
-  async compressFile(conversionType: string, inputPath: string, outputPath: string) {
+  async convertInsertData(conversionType : string , outputPath : string ,convertFileInfo : OriginalFile, status = 'PENDING', errorMessage : string | null = null){
+    await this.convertFileRepository.insert({
+      conversionName : convertFileInfo.originalName,
+      userUUID : convertFileInfo.userUUID,
+      conversionPath : outputPath,
+      originalFile : convertFileInfo,
+      conversionType : conversionType,
+      completedAt : status === 'COMPLETE' ? new Date() : null,
+      status : status,
+      ErrorCode : errorMessage,
+    })
+    .then(()=>{
+      console.log('성공한 정보 저장 성공');
+    })
+    .catch((err)=>{
+      console.error(err);
+    });
+  };
+
+
+  //remove Files
+  
+
+  // compress file 
+  async compressFile(conversionType: string, inputPath: string, outputPath: string, convertFilesInfo : OriginalFile) {
     const compressMethods = {
-      zip: () => compressing.zip.compressDir(inputPath, outputPath),
-      tar: () => compressing.tar.compressDir(inputPath, outputPath),
-      tgz: () => compressing.tgz.compressDir(inputPath, outputPath),
-      '7z': () => compressTo7z(inputPath, outputPath),
+      zip: async () => await compressing.zip.compressDir(inputPath, outputPath)
+      .then(async ()=>{
+        await this.convertInsertData(conversionType, outputPath, convertFilesInfo, 'COMPLETE');
+      })
+      .catch(async (error)=>{
+        await this.convertInsertData(conversionType, outputPath, convertFilesInfo, 'FAILED', error);
+      })
+      ,
+      tar: async () => await compressing.tar.compressDir(inputPath, outputPath)
+      .then(async ()=>{
+        await this.convertInsertData(conversionType, outputPath, convertFilesInfo, 'COMPLETE');
+      })
+      .catch(async (error)=>{
+        await this.convertInsertData(conversionType, outputPath, convertFilesInfo, 'FAILED', error);
+      })
+      ,
+      tgz: async () => await compressing.tgz.compressDir(inputPath, outputPath)
+      .then(async ()=>{
+        await this.convertInsertData(conversionType, outputPath, convertFilesInfo, 'COMPLETE');
+      })
+      .catch(async (error)=>{
+        await this.convertInsertData(conversionType, outputPath, convertFilesInfo, 'FAILED', error);
+      })
+      ,
+      '7z': async () => await compressTo7z(inputPath, outputPath)
+      .then(async ()=>{
+        await this.convertInsertData(conversionType, outputPath, convertFilesInfo, 'COMPLETE');
+      })
+      .catch(async (error)=>{
+        await this.convertInsertData(conversionType, outputPath, convertFilesInfo, 'FAILED', error);
+      })
+      ,
     };
   
     if (compressMethods[conversionType]) {
@@ -88,7 +141,6 @@ export class FileconvertService {
     }
   }
   
-
 
   //bullmq 사용 이전 
   async convertFile(@Req() request, @Res() response, user: any) {
@@ -119,9 +171,12 @@ export class FileconvertService {
     for (const file of converFilesInfo) {
       const inputPath = path.join(process.cwd(), 'uncompress', file.originalName);
       const outputPath = path.join(process.cwd(), 'convert', `${file.originalName}.${user.conversionType}`);
-      await this.compressFile(user.conversionType, inputPath, outputPath);
+      await this.compressFile(user.conversionType, inputPath, outputPath, file);
     }
   
     return converFilesInfo;
   }
+
+    
+
 }
