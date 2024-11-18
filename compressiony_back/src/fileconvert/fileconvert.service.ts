@@ -71,6 +71,7 @@ export class FileconvertService {
     }
   }
 
+  // compress insert data
   async convertInsertData(conversionType : string , outputPath : string ,convertFileInfo : OriginalFile, status = 'PENDING', errorMessage : string | null = null){
     await this.convertFileRepository.insert({
       conversionName : convertFileInfo.originalName,
@@ -89,20 +90,6 @@ export class FileconvertService {
       console.error(err);
     });
   };
-
-
-  //remove Files
-  async convertSuccessRemove(inputPath, outputDirectory){
-    const uploadFiles = await fs.promises.stat(inputPath);
-    if(uploadFiles.isFile()){
-      await fs.promises.unlink(inputPath);
-    }
-
-    const directory = await fs.promises.stat(outputDirectory);
-    if(directory.isDirectory()){
-      await fs.promises.rm(outputDirectory, {recursive : true, force : true});
-    } 
-  }
 
   // compress file 
   async compressFile(conversionType: string, inputPath: string, outputPath: string, convertFilesInfo : OriginalFile) {
@@ -152,7 +139,60 @@ export class FileconvertService {
       console.error(`지원되지 않는 압축 형식 2: ${conversionType}`);
     }
   }
-  
+
+  //remove Files
+  async convertSuccessRemove(inputPath, outputDirectory){
+    const uploadFiles = await fs.promises.stat(inputPath);
+    if(uploadFiles.isFile()){
+      await fs.promises.unlink(inputPath);
+    }
+
+    const directory = await fs.promises.stat(outputDirectory);
+    if(directory.isDirectory()){
+      await fs.promises.rm(outputDirectory, {recursive : true, force : true});
+    } 
+  }
+
+  //download Files API
+  async downloadFiles(@Req() request, @Res() response, body : any){
+      const downSession = await this.originalFileRepository.findOne({
+        select : ['uploadingSession'],
+        where : [{ userUUID : body.userUUID}],
+        order : {'createdAt' : 'DESC'}
+      }); 
+
+      const downloadInfo = await this.convertFileRepository.find({
+        where : [{
+          userUUID : body.userUUID,
+          originalFile : {uploadingSession : downSession.uploadingSession}
+        }]
+      });
+
+      for(const download of downloadInfo){
+          if(!fs.existsSync(download.conversionPath)){
+            throw response.status(400).send('file not found');
+          }
+
+          const fileName = path.basename(download.conversionPath);
+          response.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+          response.setHeader('Content-Type', 'application/octet-stream');
+
+          const fileStream = fs.createReadStream(download.conversionPath);
+          fileStream.pipe(response);
+
+          fileStream.on('end', async()=>{
+            await fs.promises.unlink(download.conversionPath).catch(err=>{
+              console.error('file unlink error', err);
+            });
+          });
+
+          fileStream.on('error', (err)=>{
+            console.error('file Stream error', err);
+            response.status(500).send('error');
+          })
+      }
+  }
+
 
   //bullmq 사용 이전 
   async convertFile(@Req() request, @Res() response, user: any) {
@@ -164,7 +204,7 @@ export class FileconvertService {
     });
   
     // Converting할 정보들 find
-    const converFilesInfo = await this.originalFileRepository.find({
+    const convertFilesInfo = await this.originalFileRepository.find({
       where: [
         {
           uploadingSession: uploadingInfo.uploadingSession,
@@ -174,20 +214,36 @@ export class FileconvertService {
     });
   
     // Uncompressing
-    for (const file of converFilesInfo) {
+    for (const file of convertFilesInfo) {
       const outputDirectory = path.join(process.cwd(), 'uncompress', file.originalName);
       await this.uncompressFile(file.type, file.uploadPath, outputDirectory);
     }
   
     // Compressing
-    for (const file of converFilesInfo) {
+    for (const file of convertFilesInfo) {
       const inputPath = path.join(process.cwd(), 'uncompress', file.originalName);
       const outputPath = path.join(process.cwd(), 'convert', `${file.originalName}.${user.conversionType}`);
       await this.compressFile(user.conversionType, inputPath, outputPath, file);
       await this.convertSuccessRemove(file.uploadPath, inputPath);
     }
-  
-    return converFilesInfo;
+    
+    let files = [];
+    for(const file of convertFilesInfo){
+      const fileResult = await this.convertFileRepository.find({
+        where : [
+          {
+            originalFile : {id : file.id}
+          }
+        ]
+      });
+      files.push(fileResult);
+    }
+
+    if(files.length === convertFilesInfo.length){
+      return true;
+    } else {
+      return false;
+    }
   }
 
     

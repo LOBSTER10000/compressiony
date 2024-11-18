@@ -94,10 +94,11 @@ const FileConverter = () => {
       }
 
       setIsUploadingSuccess(true);
-      console.log(isUploadingSuccess);
+      const result = response.json();
+      result.then((e)=>{console.log(e)});
     } 
     catch(err){
-      console.error('결과 실패', err);
+      console.error('uploading', err);
     } 
     finally {
       setIsUploading(false);
@@ -107,7 +108,8 @@ const FileConverter = () => {
   const handleConvert = async ()=>{
     const userUUID = localStorage.getItem('userUUID') || '';
     try{
-      const result = await fetch('http://localhost:3400/fileconvert/convertFile', {
+      setIsConverting(true);
+      const response = await fetch('http://localhost:3400/fileconvert/convertFile', {
         method : 'POST',
         credentials : 'same-origin',
         mode : 'cors',
@@ -119,14 +121,44 @@ const FileConverter = () => {
           conversionType : convertTo
         }),
       });
-
-      if(!result.ok){
-        throw new Error(`서버 연결 실패 ${result.statusText}`);
+      
+      if(!response.ok){
+        throw new Error(`서버 연결 실패 ${response.statusText}`);
       }
 
-      console.log('결과', result);
+      const result = await response.json();
+      if(result){
+        setProgress(100);
+        setIsConverting(false);
+      }
     } catch(err){
-      console.error(err);
+      console.error('convert', err);
+    } 
+    
+  }
+
+  const handleDownload = async ()=>{
+    try{
+      const userUUID = localStorage.getItem('userUUID') || '';
+      const response = await fetch('http://localhost:3400/fileconvert/downloadFile',{
+         method : 'POST',
+         credentials : 'same-origin',
+         cache : 'no-cache',
+         mode : 'cors',
+         headers : {
+          'Content-Type' : 'application/json'
+         },
+         body : JSON.stringify({
+          userUUID : userUUID
+         })
+      });
+
+      if(!response.ok){
+        throw new Error('')
+      }
+    }
+    catch(err){
+      console.error('download', err);
     }
   }
 
@@ -191,21 +223,24 @@ const FileConverter = () => {
 
           {isUploadingSuccess && (
             <button onClick={handleConvert}
-            disabled={files.length === 0 || isConverting || !isUploadingSuccess} className='button'>
+            disabled={files.length === 0 || isConverting || !isUploadingSuccess} 
+            style={{display : progress === 100 ? 'none' : 'block'}}
+            className='button'>
               <ArrowRight style={{ marginRight: '0.5rem', height: '1rem', width: '1rem' }} />
               uploading complete! convert to {convertTo} 
             </button>
           )}
 
           {isConverting && (
-            <div>
-              <ProgressBar progress={progress} />
-              <p style={{ textAlign: 'center', fontSize: '0.875rem' }}>{progress}% Complete</p>
+            <div 
+            style={{display : progress === 100 ? 'none' : 'block'}}
+            >
+              <p style={{ textAlign: 'center', fontSize: '0.875rem' }}>it is converting now. wait a minutes.</p>
             </div>
           )}
-
+          
           {progress === 100 && (
-            <button className="button">
+            <button className="button" onClick={handleDownload}>
               <Download style={{ marginRight: '0.5rem', height: '1rem', width: '1rem' }} />
               {files.length > 1 ? '모든 파일 다운로드' : `${files[0].name} 다운로드`}
             </button>

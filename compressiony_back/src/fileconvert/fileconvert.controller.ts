@@ -29,7 +29,7 @@ export class FileconvertController {
   async convertFile(@Req() request, @Res() response, @Body() body : any){
     try{
       const result = await this.fileconvertService.convertFile(request, response, body);
-      return result;
+      return response.json(result);
     }
     catch(err){
       console.error(err);
@@ -39,6 +39,12 @@ export class FileconvertController {
 
   @Post('/downloadFile')
   async downloadFile(@Req() request, @Res() response, @Body() body : any){
-  
+    try{
+      const result = this.fileconvertService.downloadFiles(request, response, body);
+      return response.json(result);
+    }
+    catch (err){
+      console.error(err);
+    }
   }
 }
