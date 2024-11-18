@@ -39,8 +39,9 @@ const FileConverter = () => {
 
   // set userUUID 
   useEffect(()=>{
-    if(localStorage.getItem('userUUID')) return;
-    localStorage.setItem('userUUID', uuid.v6());
+    if (!localStorage.getItem('userUUID')) {
+      localStorage.setItem('userUUID', uuid.v6());
+    }
   }, []);
 
   // upload File Change
@@ -73,9 +74,9 @@ const FileConverter = () => {
     setIsUploading(true);
     
     const userUUID = localStorage.getItem('userUUID') || '';
+    formData.append('userUUID', userUUID);
 
     files.map((item)=>{
-      formData.append('userUUID', userUUID);
       formData.append('file',item);
     })
 
@@ -93,8 +94,7 @@ const FileConverter = () => {
       }
 
       setIsUploadingSuccess(true);
-      
-      
+      console.log(isUploadingSuccess);
     } 
     catch(err){
       console.error('결과 실패', err);

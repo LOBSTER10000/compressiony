@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { extractFull } from 'node-7z';
 import * as compressing from 'compressing';
 import * as path from 'path';
+import * as fs from 'fs';
 import { compressTo7z, compressWithTar, uncompress7z, uncompressTar, uncompressZip } from './fileconvert.compress';
 
 @Injectable()
@@ -57,6 +58,7 @@ export class FileconvertService {
       '7z': () => uncompress7z(inputPath, outputDirectory),
     };
   
+    type = type.toLocaleLowerCase();
     if (uncompressMethods[type]) {
       try {
         await uncompressMethods[type]();
@@ -65,7 +67,7 @@ export class FileconvertService {
         console.error(`${type} 압축 해제 오류: ${err}`);
       }
     } else {
-      console.error(`지원되지 않는 압축 형식: ${type}`);
+      console.error(`지원되지 않는 압축 형식 1: ${type}`);
     }
   }
 
@@ -90,7 +92,17 @@ export class FileconvertService {
 
 
   //remove Files
-  
+  async convertSuccessRemove(inputPath, outputDirectory){
+    const uploadFiles = await fs.promises.stat(inputPath);
+    if(uploadFiles.isFile()){
+      await fs.promises.unlink(inputPath);
+    }
+
+    const directory = await fs.promises.stat(outputDirectory);
+    if(directory.isDirectory()){
+      await fs.promises.rm(outputDirectory, {recursive : true, force : true});
+    } 
+  }
 
   // compress file 
   async compressFile(conversionType: string, inputPath: string, outputPath: string, convertFilesInfo : OriginalFile) {
@@ -137,7 +149,7 @@ export class FileconvertService {
         console.error(`${conversionType} 압축 오류: ${err}`);
       }
     } else {
-      console.error(`지원되지 않는 압축 형식: ${conversionType}`);
+      console.error(`지원되지 않는 압축 형식 2: ${conversionType}`);
     }
   }
   
@@ -172,6 +184,7 @@ export class FileconvertService {
       const inputPath = path.join(process.cwd(), 'uncompress', file.originalName);
       const outputPath = path.join(process.cwd(), 'convert', `${file.originalName}.${user.conversionType}`);
       await this.compressFile(user.conversionType, inputPath, outputPath, file);
+      await this.convertSuccessRemove(file.uploadPath, inputPath);
     }
   
     return converFilesInfo;
