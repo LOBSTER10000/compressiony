@@ -40,11 +40,11 @@ export class FileconvertController {
   @Post('/downloadFile')
   async downloadFile(@Req() request, @Res() response, @Body() body : any){
     try{
-      const result = this.fileconvertService.downloadFiles(request, response, body);
-      return response.json(result);
+      return await this.fileconvertService.downloadFiles(request, response, body);
     }
     catch (err){
       console.error(err);
+      response.status(500).send('Error during file download');
     }
   }
 }
