@@ -26,6 +26,17 @@ const ProgressBar = ({ progress }: { progress: number }) => (
   </div>
 );
 
+interface ConvertInfo {
+  id : number,
+  userUUID : string,
+  status : string,
+  ErrorCode : string,
+  conversionType : string,
+  completedAt : Date,
+  conversionName : string,
+  conversionPath : string,
+}
+
 // Main Component
 const FileConverter = () => {
   const [files, setFiles]= useState<File[]>([]);
@@ -34,7 +45,8 @@ const FileConverter = () => {
   const [isConverting, setIsConverting] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isUploadingSuccess, setIsUploadingSuccess] = useState<boolean>(false);
-  
+  const [convertFiles, setConvertFiles] = useState<ConvertInfo[]>([]);
+
   let formData = new FormData();
 
   // set userUUID 
@@ -130,6 +142,7 @@ const FileConverter = () => {
       if(result){
         setProgress(100);
         setIsConverting(false);
+        setConvertFiles(result);
       }
     } catch(err){
       console.error('convert', err);
@@ -137,7 +150,7 @@ const FileConverter = () => {
     
   }
 
-  const handleDownload = async ()=>{
+  const handleDownload = async (filename)=>{
     try{
       const userUUID = localStorage.getItem('userUUID') || '';
       const response = await fetch('http://localhost:3400/fileconvert/downloadFile',{
@@ -156,6 +169,17 @@ const FileConverter = () => {
       if(!response.ok){
         throw new Error('')
       }
+
+
+      const blob = await response.blob();
+      
+      const a = document.createElement('a');
+      a.download = filename;
+      a.href = URL.createObjectURL(blob);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
     }
     catch(err){
       console.error('download', err);
@@ -232,18 +256,23 @@ const FileConverter = () => {
           )}
 
           {isConverting && (
+            <>
+            <div className="loader"></div>
             <div 
             style={{display : progress === 100 ? 'none' : 'block'}}
             >
               <p style={{ textAlign: 'center', fontSize: '0.875rem' }}>it is converting now. wait a minutes.</p>
             </div>
+            </>
           )}
           
           {progress === 100 && (
-            <button className="button" onClick={handleDownload}>
+            convertFiles.map((e,index)=>(
+              <button className="button" onClick={()=>handleDownload(e.conversionName+"."+e.conversionType)} key={index}>
               <Download style={{ marginRight: '0.5rem', height: '1rem', width: '1rem' }} />
-              {files.length > 1 ? '모든 파일 다운로드' : `${files[0].name} 다운로드`}
+              {e.conversionName + "." + e.conversionType}
             </button>
+            ))
           )}
         </div>
       </main>

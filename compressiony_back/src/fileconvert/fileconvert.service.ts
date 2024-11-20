@@ -176,7 +176,7 @@ export class FileconvertService {
             const fileStream = fs.createReadStream(body.filepath);
             fileStream.pipe(response);
 
-            fileStream.on('end', async()=>{
+            fileStream.on('close', async()=>{
               await fs.promises.unlink(body.filepath).catch(err=>{
                 console.error('file unlink error', err);
               });
