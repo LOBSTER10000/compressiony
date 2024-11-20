@@ -150,8 +150,9 @@ const FileConverter = () => {
     
   }
 
-  const handleDownload = async (filename)=>{
+  const handleDownload = async (file)=>{
     try{
+      console.log(file);
       const userUUID = localStorage.getItem('userUUID') || '';
       const response = await fetch('http://localhost:3400/fileconvert/downloadFile',{
          method : 'POST',
@@ -162,8 +163,9 @@ const FileConverter = () => {
           'Content-Type' : 'application/json'
          },
          body : JSON.stringify({
-          userUUID : userUUID
-         })
+          userUUID: userUUID,
+          filepath: file.conversionPath,
+        }),
       });
 
       if(!response.ok){
@@ -174,7 +176,7 @@ const FileConverter = () => {
       const blob = await response.blob();
       
       const a = document.createElement('a');
-      a.download = filename;
+      a.download = file.conversionPath;
       a.href = URL.createObjectURL(blob);
       document.body.appendChild(a);
       a.click();
@@ -268,7 +270,7 @@ const FileConverter = () => {
           
           {progress === 100 && (
             convertFiles.map((e,index)=>(
-              <button className="button" onClick={()=>handleDownload(e.conversionName+"."+e.conversionType)} key={index}>
+              <button className="button" onClick={()=>handleDownload(e)} key={index}>
               <Download style={{ marginRight: '0.5rem', height: '1rem', width: '1rem' }} />
               {e.conversionName + "." + e.conversionType}
             </button>
