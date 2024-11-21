@@ -210,7 +210,7 @@ const FileConverter = () => {
             </label>
             {files.length > 0 ? (
               <div>
-                <span className="file-count">{files.length} File</span>
+                <div className="file-count">{files.length} File</div>
                 <ul className="file-list">
                   {files.map((file, index) => (
                     <li key={index} className="file-name">
@@ -260,11 +260,13 @@ const FileConverter = () => {
 
           {isConverting && (
             <>
-            <div className="loader"></div>
-            <div 
-            style={{display : progress === 100 ? 'none' : 'block'}}
-            >
-              <p style={{ textAlign: 'center', fontSize: '0.875rem' }}>it is converting now. wait a minutes.</p>
+            <div className='loader-box'>
+              <div className="loader"></div>
+              <div 
+              style={{display : progress === 100 ? 'none' : 'block'}}
+              >
+                <p style={{ textAlign: 'center', fontSize: '1.5rem', fontWeight : 'bold' }}>it is converting now. wait a minutes.</p>
+              </div>
             </div>
             </>
           )}
