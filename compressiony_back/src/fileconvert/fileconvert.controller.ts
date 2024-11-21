@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import { CreateFilesDto } from 'src/dto/create-files.dto';
 import { ApiBody, ApiConsumes, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateFilesDto } from 'src/dto/update-files.dto';
+import { ExecutionTimeInterceptor } from 'src/interceptors/ExecutionTime.interceptor';
 
 @ApiTags('fileconvert')
 @Controller('fileconvert')
@@ -19,6 +20,7 @@ export class FileconvertController {
   @ApiBody({type : CreateFilesDto})
   @ApiResponse({status: 200, description : 'file upload Success'})
   @Post('/uploadFile')
+  @UseInterceptors(ExecutionTimeInterceptor)
   @UseInterceptors(FilesInterceptor('file', null, fileUploadMulterOptions))
 
   async uploadFile(@Req() request, @Res() response, @UploadedFiles() files : Express.Multer.File[], @Body(new ValidationPipe()) body : CreateFilesDto){
@@ -35,6 +37,7 @@ export class FileconvertController {
   @ApiBody({type : UpdateFilesDto})
   @ApiResponse({status : 200, description : 'file convert and insert mysql success'})
   @Post('/convertFile')
+  @UseInterceptors(ExecutionTimeInterceptor)
   async convertFile(@Req() request, @Res() response, @Body() body : any){
     try{
       const result = await this.fileconvertService.convertFile(request, response, body);
@@ -49,6 +52,7 @@ export class FileconvertController {
   @ApiOperation({summary : 'downloadFile', description : 'Download the converted files, which will be deleted after the download is complete'})
   @ApiResponse({status : 200, description : 'download the converted files, which will be deleted at after the download is complete'})
   @Post('/downloadFile')
+  @UseInterceptors(ExecutionTimeInterceptor)
   async downloadFile(@Req() request, @Res() response, @Body() body : any){
     try{
       return await this.fileconvertService.downloadFiles(request, response, body);
