@@ -7,6 +7,8 @@
 /convert
 /uncompress
 
+.dockerfile
+dockerfile
 # Logs
 logs
 *.log

@@ -3,6 +3,7 @@ import './FileConverter.scss';
 import { ArrowRight, Upload, Download } from 'lucide-react';
 import * as uuid from 'uuid';
 
+
 // Header Component
 const Header = () => (
   <header className="header">
@@ -121,7 +122,7 @@ const FileConverter = () => {
     const userUUID = localStorage.getItem('userUUID') || '';
     try{
       setIsConverting(true);
-      const response = await fetch('http://localhost:3400/fileconvert/convertFile', {
+      const response : Response = await fetch('http://localhost:3400/fileconvert/convertFile', {
         method : 'POST',
         credentials : 'same-origin',
         mode : 'cors',
@@ -150,7 +151,7 @@ const FileConverter = () => {
     
   }
 
-  const handleDownload = async (file)=>{
+  const handleDownload = async (file : ConvertInfo)=>{
     try{
       console.log(file);
       const userUUID = localStorage.getItem('userUUID') || '';
@@ -175,8 +176,8 @@ const FileConverter = () => {
 
       const blob = await response.blob();
       
-      const a = document.createElement('a');
-      a.download = file.conversionPath;
+      const a : HTMLAnchorElement = document.createElement('a');
+      a.download = file.conversionName+"."+file.conversionType;
       a.href = URL.createObjectURL(blob);
       document.body.appendChild(a);
       a.click();
