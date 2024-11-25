@@ -46,6 +46,7 @@
 ---
 
 ## 📊 성능 비교
+  ### BullMQ 적용 전후의 성능 비교는 특정 파일 10개를 동일한 기준으로 처리하여 측정되었습니다.
 
 | 항목                    | BullMQ 적용 전      | BullMQ 적용 후       | 개선율       |
 |-------------------------|---------------------|---------------------|-------------|
@@ -153,6 +154,7 @@ To overcome this, **BullMQ** was introduced to manage **asynchronous task queues
 ---
 
 ## 📊 Performance Comparison
+ ### The performance comparison before and after implementing BullMQ was measured by processing 10 specific files under the same conditions.
 
 | Metric                  | Before BullMQ       | After BullMQ        | Improvement |
 |-------------------------|---------------------|---------------------|-------------|
