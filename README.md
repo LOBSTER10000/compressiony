@@ -71,6 +71,15 @@
 
 ---
 
+## 🛠️ 기술 스택
+
+| **Category**   | **Technology**                                                                 |
+|----------------|--------------------------------------------------------------------------------|
+| **Backend**    | ![Nest.js](https://img.shields.io/badge/Nest.js-E0234E?style=flat&logo=nestjs&logoColor=white) ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white) ![BullMQ](https://img.shields.io/badge/BullMQ-E02222?style=flat) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white) ![TypeORM](https://img.shields.io/badge/TypeORM-FEFEFE?style=flat&logo=typeorm&logoColor=orange) |
+| **Frontend**   | ![React.js](https://img.shields.io/badge/React.js-61DAFB?style=flat&logo=react&logoColor=white) ![SCSS](https://img.shields.io/badge/SCSS-CC6699?style=flat&logo=sass&logoColor=white)                                           |
+
+---
+
 ## 프로젝트 아키텍처
 
 [아키텍처 다이어그램 또는 설명 추가 필요]
@@ -167,6 +176,17 @@ To overcome this, **BullMQ** was introduced to manage **asynchronous task queues
 - **60% Reduction in Processing Time**: By implementing BullMQ, we significantly improved speed and system scalability.  
 - **Scalability and Efficiency**: This optimization allowed the system to handle larger workloads seamlessly, enhancing user satisfaction and operational performance.
 
+---
+
+## 🛠️ Skill stack
+
+| **Category**   | **Technology**                                                                 |
+|----------------|--------------------------------------------------------------------------------|
+| **Backend**    | ![Nest.js](https://img.shields.io/badge/Nest.js-E0234E?style=flat&logo=nestjs&logoColor=white) ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white) ![BullMQ](https://img.shields.io/badge/BullMQ-E02222?style=flat) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white) ![TypeORM](https://img.shields.io/badge/TypeORM-FEFEFE?style=flat&logo=typeorm&logoColor=orange) |
+| **Frontend**   | ![React.js](https://img.shields.io/badge/React.js-61DAFB?style=flat&logo=react&logoColor=white) ![SCSS](https://img.shields.io/badge/SCSS-CC6699?style=flat&logo=sass&logoColor=white)                                           |
+
+
+---
 
 ## Project Architecture
  
