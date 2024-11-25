@@ -46,7 +46,6 @@
 ---
 
 ## 📊 성능 비교
-  ### BullMQ 적용 전후의 성능 비교는 특정 파일 10개를 동일한 기준으로 처리하여 측정되었습니다.
 
 | 항목                    | BullMQ 적용 전      | BullMQ 적용 후       | 개선율       |
 |-------------------------|---------------------|---------------------|-------------|
@@ -87,22 +86,37 @@
 
 ---
 
-## 설정 및 시작 방법
+## 🛠️ 설정 및 시작 방법
+
+### 서버 설정 및 실행
 ```bash
 # 1. 리포지토리 클론
-git clone https://github.com/username/project-name.git
+git clone https://github.com/LOBSTER10000/compressiony.git
 
-# 2. 의존성 설치
+# 2. Redis 실행 (BullMQ 사용을 위해 필요)
+redis-server
+
+# 3. MySQL 실행 및 TypeORM 설정
+# MySQL 서버를 실행한 뒤, app.module에서 TypeORM 설정을 구성합니다.
+
+# 4. 의존성 설치
 cd project-name
 npm install
 
-# 3. Redis 실행 (BullMQ 필요)
-redis-server
-
-# 4. 서버 실행
-npm start
+# 5. 서버 실행 (포트 3400에서 실행)
+npm run start
 ```
+### 클라이언트 서버 설정 및 실행
+```bash
+# 1. 클라이언트 디렉토리로 이동
+cd client
 
+# 2. 의존성 설치
+npm install
+
+# 3. 클라이언트 실행 (포트 3000에서 실행)
+npm run start
+```
 
 
 ---------------
@@ -154,7 +168,6 @@ To overcome this, **BullMQ** was introduced to manage **asynchronous task queues
 ---
 
 ## 📊 Performance Comparison
- ### The performance comparison before and after implementing BullMQ was measured by processing 10 specific files under the same conditions.
 
 | Metric                  | Before BullMQ       | After BullMQ        | Improvement |
 |-------------------------|---------------------|---------------------|-------------|
@@ -194,18 +207,34 @@ To overcome this, **BullMQ** was introduced to manage **asynchronous task queues
  
 
 
-## Setup && How to start
- ```
- # 1. Repository Clone
-git clone https://github.com/username/project-name.git
+## 🛠️ Setup and Start Guide
 
-# 2. Dependencies Install 
+### Server Setup and Execution
+```bash
+# 1. Clone the repository
+git clone https://github.com/LOBSTER10000/compressiony.git
+
+# 2. Start Redis (required for BullMQ)
+redis-server
+
+# 3. Start MySQL and configure TypeORM
+# Start the MySQL server and configure TypeORM in app.module.
+
+# 4. Install dependencies
 cd project-name
 npm install
 
-# 3. Redis (Bullmq required)
-redis-server
+# 5. Start the server (runs on port 3400)
+npm run start
+```
+### Client Server Setup and Execution
+```bash
+# 1. Navigate to the client directory
+cd client
 
-# 4. Server Start
-npm start
+# 2. Install dependencies
+npm install
+
+# 3. Start the client (runs on port 3000)
+npm run start
 ```
