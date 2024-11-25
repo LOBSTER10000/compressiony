@@ -1,5 +1,9 @@
 # Free Archive File Extension Converter
 
+<br>
+<img src="https://github.com/user-attachments/assets/e80eca97-192e-44ec-9c34-9535ff3bca80" style="width: 60%;"></img>
+<br>
+
 ## 🗣️ 프로젝트 소개
 **간단한 압축 파일 확장자 변환 도구**  
 이 프로젝트는 최대 50MB 크기의 압축 파일 확장자를 쉽게 변환할 수 있는 도구입니다. 사용자는 .zip, .7z, .tar 등 다양한 파일 형식을 간단하게 변환할 수 있습니다.
